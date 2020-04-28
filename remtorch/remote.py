@@ -3,6 +3,7 @@ import paramiko
 import os
 import io
 import torch
+import numpy as np
 
 
 class RemoteDataset(torch.utils.data.Dataset):
@@ -54,6 +55,8 @@ class RemoteDataset(torch.utils.data.Dataset):
         self.sftp = paramiko.SFTPClient.from_transport(self.transport)
 
         self._files = self.sftp.listdir(self.path)
+        if self.shuffle:
+            self._files = np.random.shuffle(self._files)
         self.count_files.value += len(self._files)
         self.is_ready.set()
 
@@ -80,7 +83,7 @@ class RemoteDataset(torch.utils.data.Dataset):
         if self.used_items != 0 and self.used_items % self.batch_size == 0:
             self.contains_batches.value -= 1
             self.used_items = 0
-            # we can't use slices because they creating a new object
+            # we can't use slices because they are creating a new object
             # so slices will break multiprocessing compatibility
             for _ in range(self.batch_size):
                 del self.list[0]
