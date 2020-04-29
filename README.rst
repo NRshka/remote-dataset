@@ -2,6 +2,12 @@
 Dataset class to access remote data
 ===================================
 
+**Installation**
+
+To install the latest version from PyPI, use:
+
+>>> pip install remtorch
+
 **Example of usage**
 
 .. code-block:: python
